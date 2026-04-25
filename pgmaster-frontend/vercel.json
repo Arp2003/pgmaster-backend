@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "framework": "nextjs",
+  "regions": ["sfo1"],
+  "rewrites": [
+    {
+      "source": "/api/v1/:path*",
+      "destination": "https://your-backend-url.com/api/v1/:path*"
+    }
+  ]
+}

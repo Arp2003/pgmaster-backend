@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notice from Property - PGMaster</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 30px 20px;
+        }
+        .content p {
+            margin: 0 0 15px 0;
+        }
+        .notice-type-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            background-color: #fff3e0;
+            color: #e65100;
+            margin-bottom: 20px;
+        }
+        .notice-body {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-left: 4px solid #ff9800;
+            border-radius: 4px;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+        .important-note {
+            background-color: #ffebee;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            color: #c62828;
+        }
+        .property-info {
+            background-color: #f0f4ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .property-info p {
+            margin: 5px 0;
+        }
+        .footer {
+            background-color: #f9f9f9;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+        .date-issued {
+            font-weight: bold;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Official Notice</h1>
+        </div>
+        
+        <div class="content">
+            <p>Dear <strong>{{ tenant_name }}</strong>,</p>
+            
+            <p>You are receiving this notice from the management of your property:</p>
+
+            <div class="property-info">
+                <p><strong>{{ property_name }}</strong></p>
+                <p>{{ property_address }}</p>
+                <p>Room: {{ room_number }}, Floor: {{ floor }}</p>
+            </div>
+
+            <span class="notice-type-badge">{{ notice_type|title }}</span>
+
+            <p><strong>Date Issued:</strong> <span class="date-issued">{{ issued_date }}</span></p>
+
+            <div class="notice-body">
+                {{ notice_content|safe }}
+            </div>
+
+            {% if notice_type == 'rent_reminder' %}
+            <p><strong>Please ensure you are up to date with your rent payments. Late payments may result in penalties.</strong></p>
+            {% elif notice_type == 'maintenance' %}
+            <div class="important-note">
+                <p><strong>⚠️ Action Required:</strong> Please cooperate with the maintenance team for inspections or repairs.</p>
+            </div>
+            {% elif notice_type == 'rules_update' %}
+            <p><strong>Please review the updated rules and regulations carefully. Compliance is mandatory for all residents.</strong></p>
+            {% elif notice_type == 'event' %}
+            <p><strong>Mark your calendar for this important event. Your attendance/participation is appreciated.</strong></p>
+            {% endif %}
+
+            <p><strong>Contact Information:</strong></p>
+            <p>If you have any questions regarding this notice, please reach out to the management:</p>
+            <p>Email: <strong>{{ property_email }}</strong></p>
+            <p>Phone: <strong>{{ property_phone }}</strong></p>
+
+            <p>For acknowledgment or to submit your response, please login to PGMaster:</p>
+            <p><a href="{{ notice_link }}" style="color: #667eea; text-decoration: none; font-weight: bold;">View Notice in PGMaster</a></p>
+
+            <p>Best regards,<br><strong>{{ property_name }} Management</strong></p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 PGMaster. All rights reserved.</p>
+            <p>This is an official notice. Please retain a copy for your records.</p>
+        </div>
+    </div>
+</body>
+</html>

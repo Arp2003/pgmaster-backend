@@ -1,0 +1,155 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: pgmaster-db
+    environment:
+      POSTGRES_DB: pgmaster
+      POSTGRES_USER: pgmaster
+      POSTGRES_PASSWORD: pgmaster123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pgmaster"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache & Celery Broker
+  redis:
+    image: redis:7-alpine
+    container_name: pgmaster-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Django Backend
+  backend:
+    build:
+      context: ./pgmaster-backend
+      dockerfile: Dockerfile
+    container_name: pgmaster-backend
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    environment:
+      DEBUG: "False"
+      SECRET_KEY: django-insecure-your-secret-key-change-in-production
+      ALLOWED_HOSTS: localhost,127.0.0.1,backend
+      DATABASE_NAME: pgmaster
+      DATABASE_USER: pgmaster
+      DATABASE_PASSWORD: pgmaster123
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      REDIS_URL: redis://redis:6379
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:3001,http://frontend:3000
+      EMAIL_HOST: smtp.gmail.com
+      EMAIL_PORT: 587
+      EMAIL_HOST_USER: your-email@gmail.com
+      EMAIL_HOST_PASSWORD: your-app-password
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./pgmaster-backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - pgmaster-network
+
+  # Celery Worker
+  celery_worker:
+    build:
+      context: ./pgmaster-backend
+      dockerfile: Dockerfile
+    container_name: pgmaster-celery-worker
+    command: celery -A config worker -l info
+    environment:
+      DEBUG: "False"
+      SECRET_KEY: django-insecure-your-secret-key-change-in-production
+      DATABASE_NAME: pgmaster
+      DATABASE_USER: pgmaster
+      DATABASE_PASSWORD: pgmaster123
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      REDIS_URL: redis://redis:6379
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    volumes:
+      - ./pgmaster-backend:/app
+    depends_on:
+      - db
+      - redis
+      - backend
+    networks:
+      - pgmaster-network
+
+  # Celery Beat (Scheduler)
+  celery_beat:
+    build:
+      context: ./pgmaster-backend
+      dockerfile: Dockerfile
+    container_name: pgmaster-celery-beat
+    command: celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    environment:
+      DEBUG: "False"
+      SECRET_KEY: django-insecure-your-secret-key-change-in-production
+      DATABASE_NAME: pgmaster
+      DATABASE_USER: pgmaster
+      DATABASE_PASSWORD: pgmaster123
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      REDIS_URL: redis://redis:6379
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    volumes:
+      - ./pgmaster-backend:/app
+    depends_on:
+      - db
+      - redis
+      - backend
+    networks:
+      - pgmaster-network
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./pgmaster-frontend
+      dockerfile: Dockerfile
+    container_name: pgmaster-frontend
+    command: npm run dev
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000/api/v1
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./pgmaster-frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - pgmaster-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  pgmaster-network:
+    driver: bridge

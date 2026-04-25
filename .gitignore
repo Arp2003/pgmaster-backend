@@ -1,0 +1,43 @@
+# Node
+node_modules/
+.next/
+dist/
+build/
+.env*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+.venv
+env/
+instance/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Database
+*.sqlite3
+db.sqlite3
+
+# Media/Uploads
+media/
+static/
+!static/.gitkeep
