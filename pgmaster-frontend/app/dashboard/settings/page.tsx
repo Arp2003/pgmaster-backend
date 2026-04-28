@@ -5,8 +5,8 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Settings, Bell, CreditCard, Users, Zap } from 'lucide-react'
-import { apiClient } from '@/lib/api-client'
+import { Settings, Bell, CreditCard, Users } from 'lucide-react'
+import client from '@/lib/api-client'
 
 const pgSettingsSchema = z.object({
   property_name: z.string().min(3),
@@ -31,12 +31,12 @@ export default function AdminSettingsPage() {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['pgSettings'],
     queryFn: async () => {
-      const response = await apiClient.get('/pg/profile/')
+      const response = await client.get('/pg/profile/')
       return response.data
     },
   })
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<PGSettingsFormData>({
+  const { register, handleSubmit, formState: { errors } } = useForm<PGSettingsFormData>({
     resolver: zodResolver(pgSettingsSchema),
     defaultValues: {
       property_name: settings?.data?.property_name || '',
@@ -55,7 +55,7 @@ export default function AdminSettingsPage() {
   // Update settings mutation
   const updateSettingsMutation = useMutation({
     mutationFn: async (data: PGSettingsFormData) => {
-      const response = await apiClient.patch('/pg/profile/', {
+      const response = await client.patch('/pg/profile/', {
         property_name: data.property_name,
         address: data.address,
         contact_number: data.contact_number,

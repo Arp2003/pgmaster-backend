@@ -195,7 +195,7 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-center">
+            <div className="mt-6 flex justify-center flex-col items-center gap-2">
               <GoogleLogin
                 onSuccess={(credentialResponse) => {
                   if (credentialResponse.credential) {
@@ -218,6 +218,11 @@ export default function RegisterPage() {
                   console.error('Login Failed')
                 }}
               />
+              {isGooglePending && (
+                <p className="text-sm text-gray-500">
+                  Signing up with Google...
+                </p>
+              )}
             </div>
           </div>
 

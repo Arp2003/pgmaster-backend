@@ -1,10 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { authAPI } from '@/lib/api-endpoints'
 import { useAuthStore } from './useAuth'
 
 export const useLogin = () => {
   const { setUser, setToken } = useAuthStore()
-  
+
   return useMutation({
     mutationFn: authAPI.login,
     onSuccess: (response) => {
@@ -18,7 +18,7 @@ export const useLogin = () => {
 
 export const useGoogleLogin = () => {
   const { setUser, setToken } = useAuthStore()
-  
+
   return useMutation({
     mutationFn: authAPI.googleLogin,
     onSuccess: (response) => {
@@ -38,7 +38,7 @@ export const useRegister = () => {
 
 export const useLogout = () => {
   const { logout } = useAuthStore()
-  
+
   return useMutation({
     mutationFn: authAPI.logout,
     onSuccess: () => {

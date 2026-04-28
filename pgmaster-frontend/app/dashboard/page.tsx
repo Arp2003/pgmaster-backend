@@ -73,7 +73,7 @@ export default function DashboardPage() {
           <div className="space-y-4">
             <div className="flex justify-between items-center py-2 border-b border-border">
               <span className="text-muted-foreground">PG Name</span>
-              <span className="font-medium">{user.pg_profile?.name || 'My PG'}</span>
+              <span className="font-medium">{(user as any).pg_profile?.name || 'My PG'}</span>
             </div>
             <div className="flex justify-between items-center py-2 border-b border-border">
               <span className="text-muted-foreground">Owner</span>

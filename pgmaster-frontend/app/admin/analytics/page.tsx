@@ -27,19 +27,19 @@ export default function AdminAnalytics() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <p className="text-sm text-gray-600 mb-2">Total PGs</p>
-            <p className="text-3xl font-bold">0</p>
+            <p className="text-3xl font-bold">{analytics?.total_pgs || 0}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <p className="text-sm text-gray-600 mb-2">Active Subscriptions</p>
-            <p className="text-3xl font-bold">0</p>
+            <p className="text-3xl font-bold">{analytics?.active_subscriptions || 0}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <p className="text-sm text-gray-600 mb-2">Total Revenue</p>
-            <p className="text-3xl font-bold">₹0</p>
+            <p className="text-3xl font-bold">₹{analytics?.total_revenue || 0}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <p className="text-sm text-gray-600 mb-2">Avg Occupancy</p>
-            <p className="text-3xl font-bold">0%</p>
+            <p className="text-3xl font-bold">{analytics?.avg_occupancy || 0}%</p>
           </div>
         </div>
 

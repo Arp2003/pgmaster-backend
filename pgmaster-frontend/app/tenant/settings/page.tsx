@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Bell, Lock, User, Eye, EyeOff } from 'lucide-react'
-import { apiClient } from '@/lib/api-client'
+import client from '@/lib/api-client'
 
 const settingsSchema = z.object({
   first_name: z.string().min(2),
@@ -45,7 +45,7 @@ export default function TenantSettingsPage() {
   const { data: profile, isLoading } = useQuery({
     queryKey: ['userProfile'],
     queryFn: async () => {
-      const response = await apiClient.get('/auth/profile/')
+      const response = await client.get('/auth/profile/')
       return response.data
     },
   })
@@ -67,7 +67,7 @@ export default function TenantSettingsPage() {
   // Update profile mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (data: SettingsFormData) => {
-      const response = await apiClient.patch('/auth/profile/', {
+      const response = await client.patch('/auth/profile/', {
         first_name: data.first_name,
         last_name: data.last_name,
         email: data.email,
@@ -84,7 +84,7 @@ export default function TenantSettingsPage() {
   // Change password mutation
   const changePasswordMutation = useMutation({
     mutationFn: async (data: SettingsFormData) => {
-      const response = await apiClient.post('/auth/change-password/', {
+      const response = await client.post('/auth/change-password/', {
         current_password: data.current_password,
         new_password: data.new_password,
       })

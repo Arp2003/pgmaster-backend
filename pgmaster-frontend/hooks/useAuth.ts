@@ -1,6 +1,12 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+export interface TenantDetails {
+  monthly_rent?: number
+  room_number?: string
+  bed_number?: string
+}
+
 export interface User {
   id: number
   username: string
@@ -10,6 +16,9 @@ export interface User {
   phone: string
   role: 'super_admin' | 'pg_owner' | 'staff' | 'tenant'
   is_verified: boolean
+
+  // ✅ FIX FOR VERCEL BUILD ERROR
+  tenant_details?: TenantDetails | null
 }
 
 interface AuthStore {
@@ -20,7 +29,7 @@ interface AuthStore {
   logout: () => void
 }
 
-export const useAuthStore = create<AuthStore>(
+export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
       user: null,
