@@ -1,3 +1,4 @@
+from rest_framework.decorators import action
 from apps.rooms.models import Room
 from apps.tenants.models import Tenant
 
