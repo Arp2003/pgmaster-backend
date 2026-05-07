@@ -9,6 +9,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # API routes
     path('api/v1/auth/', include('apps.auth.urls')),
     path('api/v1/pg/', include('apps.pg.urls')),
     path('api/v1/rooms/', include('apps.rooms.urls')),
@@ -21,6 +23,7 @@ urlpatterns = [
     path('api/v1/mess/', include('apps.mess.urls')),
 ]
 
+# Static & Media (only in development)
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
