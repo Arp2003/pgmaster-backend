@@ -1,37 +1,50 @@
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
 from apps.rooms.models import Room
 from apps.tenants.models import Tenant
+from .models import PGProfile
+from .serializers import PGProfileSerializer
 
-@action(detail=False, methods=['get'], url_path='dashboard')
-def dashboard(self, request):
-    """Dashboard stats for current PG owner"""
 
-    try:
-        pg = PGProfile.objects.get(owner=request.user)
-    except PGProfile.DoesNotExist:
-        return Response(
-            {"error": "PG profile not found"},
-            status=status.HTTP_404_NOT_FOUND
-        )
+class PGProfileViewSet(viewsets.ModelViewSet):
+    serializer_class = PGProfileSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = PGProfile.objects.all()
 
-    rooms = Room.objects.filter(pg=pg)
-    tenants = Tenant.objects.filter(room__pg=pg)
+    # ✅ ADD THIS INSIDE CLASS
+    @action(detail=False, methods=['get'], url_path='dashboard')
+    def dashboard(self, request):
+        """Dashboard stats for current PG owner"""
 
-    total_rooms = rooms.count()
+        try:
+            pg = PGProfile.objects.get(owner=request.user)
+        except PGProfile.DoesNotExist:
+            return Response(
+                {"error": "PG profile not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
-    total_beds = sum(
-        [room.total_beds for room in rooms]
-    ) if rooms.exists() else 0
+        rooms = Room.objects.filter(pg=pg)
+        tenants = Tenant.objects.filter(room__pg=pg)
 
-    occupied_beds = tenants.count()
+        total_rooms = rooms.count()
 
-    occupancy = 0
-    if total_beds > 0:
-        occupancy = (occupied_beds / total_beds) * 100
+        total_beds = sum(
+            [room.total_beds for room in rooms]
+        ) if rooms.exists() else 0
 
-    return Response({
-        "total_rooms": total_rooms,
-        "total_beds": total_beds,
-        "occupied_beds": occupied_beds,
-        "occupancy": round(occupancy, 2)
-    })
+        occupied_beds = tenants.count()
+
+        occupancy = 0
+        if total_beds > 0:
+            occupancy = (occupied_beds / total_beds) * 100
+
+        return Response({
+            "total_rooms": total_rooms,
+            "total_beds": total_beds,
+            "occupied_beds": occupied_beds,
+            "occupancy": round(occupancy, 2)
+        })
