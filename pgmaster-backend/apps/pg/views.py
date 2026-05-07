@@ -14,7 +14,16 @@ class PGProfileViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = PGProfile.objects.all()
 
-    # ✅ ADD THIS INSIDE CLASS
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'pg_owner':
+            return PGProfile.objects.filter(owner=user)
+        return PGProfile.objects.none()
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    # ✅ Dashboard API
     @action(detail=False, methods=['get'], url_path='dashboard')
     def dashboard(self, request):
         """Dashboard stats for current PG owner"""
